@@ -14,4 +14,7 @@ This project is a test assignment.
  
  Admin View
  
- ![Screenshot](images/002.png)
+ ![Screenshot](images/002.png) 
+ Persons API Endpoint
+ 
+ ![Screenshot](images/003.png)
