@@ -8,6 +8,10 @@ This project is a test assignment.
     2. Django
     
 # Latest Screenshots
+ Demo
+
+ ![Screenshot](images/004.png)
+ 
  Home Page
 
  ![Screenshot](images/001.png)
