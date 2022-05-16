@@ -10,7 +10,7 @@ This project is a test assignment.
 # Latest Screenshots
  Demo
 
- ![Screenshot](images/004.png)
+ ![Screenshot](images/004.gif)
  
  Home Page
 
