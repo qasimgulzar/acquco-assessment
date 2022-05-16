@@ -1,0 +1,28 @@
+<!doctype html>
+{% load render_bundle from webpack_loader %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="theme-color" content="#000000">
+
+  <title>React App</title>
+
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <div id="container" style="padding: 24px" />
+    {% render_bundle 'frontend' %}
+    <script>var mountNode = document.getElementById('container');</script>
+  </body>
+</html>
+
+</body>
+</html>
