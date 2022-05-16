@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'antd/dist/antd.css';
 import './index.css';
-import { Table, Input, InputNumber, Popconfirm, Form, Typography } from 'antd';
+import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button } from 'antd';
+import { fetchPeople, updatePerson, removePerson, addPerson } from './api';
 const originData = [];
 
 for (let i = 0; i < 100; i++) {
@@ -50,10 +51,18 @@ const EditableCell = ({
 
 const EditableTable = () => {
   const [form] = Form.useForm();
-  const [data, setData] = useState(originData);
+  const [data, setData] = useState([]);
   const [editingKey, setEditingKey] = useState('');
+  const [loadPersons, setLoadPersons] = useState([]);
 
   const isEditing = (record) => record.key === editingKey;
+
+  useEffect(() => {
+    fetchPeople().then(async (response) => {
+      const results = await response.json();
+      setData(results);
+    });
+  }, loadPersons);
 
   const edit = (record) => {
     form.setFieldsValue({
@@ -69,26 +78,72 @@ const EditableTable = () => {
     setEditingKey('');
   };
 
+  const add = () => {
+    const newData = [
+      {
+        name: '',
+        address: '',
+        age: '',
+        key: '---',
+        id: '---',
+      },
+      ...data
+    ];
+
+    setData(newData);
+    setEditingKey('---');
+
+    form.setFieldsValue({
+      name: '',
+      age: '',
+      address: '',
+    });
+  }
+
   const save = async (key) => {
     try {
       const row = await form.validateFields();
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.key);
 
-      if (index > -1) {
+      if (index > -1 && key != '---') {
         const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
+        newData.splice(index, 1, {...item, ...row});
         setData(newData);
-        setEditingKey('');
+        updatePerson({
+          ...row,
+          id: key,
+        }).then(data => {
+          setEditingKey('');
+        });
       } else {
-        newData.push(row);
-        setData(newData);
-        setEditingKey('');
+        addPerson(row).then((data)=>{
+          newData.splice(index, 1, data);
+          setData(newData);
+          setEditingKey('');
+        });
       }
     } catch (errInfo) {
       console.log('Validate Failed:', errInfo);
     }
   };
+
+  const remove = async (record) => {
+    try {
+      const {key} = record;
+      const newData = [...data];
+      const index = newData.findIndex((item) => key === item.key);
+
+      if (index > -1) {
+        removePerson(record);
+        newData.splice(index, 1);
+        setData(newData);
+      }
+
+    } catch (errInfo) {
+      console.log('Validate Failed:', errInfo);
+    }
+  }
 
   const columns = [
     {
@@ -129,9 +184,15 @@ const EditableTable = () => {
             </Popconfirm>
           </span>
         ) : (
-          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-            Edit
-          </Typography.Link>
+          <span>
+            <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+              Edit
+            </Typography.Link>
+            &nbsp;&nbsp;
+            <Typography.Link disabled={editingKey !== ''} onClick={() => remove(record)}>
+              Delete
+            </Typography.Link>
+          </span>
         );
       },
     },
@@ -154,6 +215,9 @@ const EditableTable = () => {
   });
   return (
     <Form form={form} component={false}>
+      <Button onClick={()=>add()} disabled={editingKey !== ''} type="primary" style={{ marginBottom: 16 }}>
+        Add a row
+      </Button>
       <Table
         components={{
           body: {
